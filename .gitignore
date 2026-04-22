@@ -1,5 +1,7 @@
 build/
 build_debug/
+cmake-build-debug/
+.idea/
 *.o
 *.a
 *.so
