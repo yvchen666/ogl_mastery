@@ -1,0 +1,42 @@
+#version 460 core
+
+// ── Orbit update Compute Shader ───────────────────────────────────────────────
+// 每个 invocation 更新一个粒子的轨道位置
+// 粒子绕 Y 轴做匀速圆周运动，角速度与轨道半径成反比（开普勒近似）
+
+layout(local_size_x = 256, local_size_y = 1, local_size_z = 1) in;
+
+// SSBO: binding = 0（与 InstanceRenderer 同一个 binding）
+// 格式：vec4 per particle
+//   xyz = world position
+//   w   = orbit radius (用于计算角速度)
+layout(std430, binding = 0) buffer OrbitData {
+    vec4 particles[];   // pos_speed: xyz = pos, w = radius
+};
+
+uniform float uDeltaTime;
+
+void main() {
+    // Global invocation index
+    uint idx = gl_GlobalInvocationID.x;
+
+    // 防止越界（工作组可能超过粒子数量）
+    if (idx >= particles.length()) return;
+
+    vec4 ps = particles[idx];
+    vec3 pos    = ps.xyz;
+    float radius = ps.w;
+
+    // 当前角度（从 xz 平面上的 atan2 求得）
+    float angle = atan(pos.z, pos.x);
+
+    // 开普勒第三定律近似：角速度 ω ∝ 1/sqrt(r^3)
+    float omega = 0.3 / sqrt(radius * radius * radius) * 50.0;
+
+    // 更新角度
+    angle += omega * uDeltaTime;
+
+    // 更新位置（保持 y 不变）
+    particles[idx] = vec4(radius * cos(angle), pos.y,
+                          radius * sin(angle), radius);
+}

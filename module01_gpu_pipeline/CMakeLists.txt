@@ -1,0 +1,2 @@
+add_executable(module01_query_gpu src/query_gpu_info.cpp)
+target_link_libraries(module01_query_gpu PRIVATE ogl_common)

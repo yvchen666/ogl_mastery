@@ -1,0 +1,33 @@
+cmake_minimum_required(VERSION 3.20)
+project(ogl_mastery CXX C)
+
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
+include(deps)
+
+# 每个模块独立可执行，按需开关
+option(BUILD_ALL "Build all modules" ON)
+
+if(BUILD_ALL)
+    add_subdirectory(module01_gpu_pipeline)
+    add_subdirectory(module02_hello_triangle)
+    add_subdirectory(module03_glsl_deep)
+    add_subdirectory(module04_linear_algebra)
+    add_subdirectory(module05_transforms)
+    add_subdirectory(module06_camera)
+    add_subdirectory(module07_texture)
+    add_subdirectory(module08_lighting)
+    add_subdirectory(module09_normal_maps)
+    add_subdirectory(module10_shadow)
+    add_subdirectory(module11_framebuffer)
+    add_subdirectory(module12_deferred)
+    add_subdirectory(module13_pbr)
+    add_subdirectory(module14_advanced_gl)
+    add_subdirectory(module15_particles)
+    add_subdirectory(module16_yuv_renderer)
+    add_subdirectory(module17_scene_editor)
+    add_subdirectory(module18_raytracing_intro)
+endif()

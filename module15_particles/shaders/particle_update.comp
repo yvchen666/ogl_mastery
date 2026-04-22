@@ -1,0 +1,64 @@
+#version 460 core
+layout(local_size_x = 256) in;
+
+struct Particle {
+    vec4 position;  // xyz=pos, w=age
+    vec4 velocity;  // xyz=vel, w=life_max
+    vec4 color;     // rgba
+};
+
+layout(std430, binding = 0) buffer ParticleBuffer {
+    Particle particles[];
+};
+
+uniform float uDeltaTime;
+uniform float uTime;
+
+// ─── GLSL 哈希随机数（无内置 random）────────────────────────────
+// 基于 Wang hash 的 float [0,1)
+float hash(uint n) {
+    n  = (n << 13U) ^ n;
+    n  = n * (n * n * 15731U + 789221U) + 1376312589U;
+    return float(n & uvec1(0x7fffffffU).x) / float(0x7fffffff);
+}
+
+float rand(uint seed) {
+    return hash(seed);
+}
+
+void main() {
+    uint idx = gl_GlobalInvocationID.x;
+    uint total = uint(particles.length());
+    if (idx >= total) return;
+
+    Particle p = particles[idx];
+    p.position.w += uDeltaTime;  // age 递增
+
+    if (p.position.w >= p.velocity.w) {
+        // ── 粒子死亡：从发射点重置 ────────────────────────
+        uint s0 = idx * 1664525U + uint(uTime * 1000.0) * 22695477U;
+        float angle = rand(s0)       * 6.28318;
+        float speed = 2.0 + rand(s0 + 1U) * 3.0;
+        float life  = 3.0 + rand(s0 + 2U) * 5.0;
+
+        p.position = vec4(0.0, 0.0, 0.0, 0.0);
+        p.velocity = vec4(cos(angle) * speed,
+                          5.0 + rand(s0 + 3U) * 5.0,
+                          sin(angle) * speed,
+                          life);
+        p.color = vec4(rand(s0 + 4U),
+                       rand(s0 + 5U),
+                       rand(s0 + 6U),
+                       1.0);
+    } else {
+        // ── 物理积分 ──────────────────────────────────────
+        p.velocity.y -= 9.8 * uDeltaTime;          // 重力加速度
+        p.position.xyz += p.velocity.xyz * uDeltaTime;
+
+        // 颜色淡出（alpha 随年龄线性减小）
+        float t = p.position.w / p.velocity.w;
+        p.color.a = 1.0 - t;
+    }
+
+    particles[idx] = p;
+}
