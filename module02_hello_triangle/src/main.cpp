@@ -135,7 +135,7 @@ int main() {
     // 指定 OpenGL 版本：4.6 Core Profile
     // Core Profile 移除了所有 legacy OpenGL 特性（glBegin/glEnd、默认 VAO 等）
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 5);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
     // 请求调试上下文：驱动会为每个 API 调用做额外验证，性能略低但错误信息丰富

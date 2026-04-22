@@ -180,7 +180,7 @@ static std::vector<glm::mat4> gen_asteroid_transforms(int count, float ring_r = 
 int main() {
     glfwInit();
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 5);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
     GLFWwindow* win = glfwCreateWindow(1280, 720, "Module14 - Advanced GL", nullptr, nullptr);
     glfwMakeContextCurrent(win);

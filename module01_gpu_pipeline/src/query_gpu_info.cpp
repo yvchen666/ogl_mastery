@@ -9,11 +9,21 @@ int main() {
     glfwInit();
     glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 5);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
     GLFWwindow* w = glfwCreateWindow(1,1,"",nullptr,nullptr);
+    if (!w) {
+        std::cerr << "GLFW: failed to create window (no display or GL 4.6 not supported)\n";
+        glfwTerminate();
+        return 1;
+    }
     glfwMakeContextCurrent(w);
-    gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);
+    if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
+        std::cerr << "GLAD: failed to load OpenGL\n";
+        glfwDestroyWindow(w);
+        glfwTerminate();
+        return 1;
+    }
 
     std::cout << "Vendor:   " << glGetString(GL_VENDOR) << "\n";
     std::cout << "Renderer: " << glGetString(GL_RENDERER) << "\n";
